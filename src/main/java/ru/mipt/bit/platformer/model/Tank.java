@@ -1,6 +1,6 @@
 package ru.mipt.bit.platformer.model;
 
-public class Tank {
+public class Tank implements Movable, MovingObject, Updatable {
 
     private static final float MOVEMENT_STARTED = 0f;
     private static final float MOVEMENT_FINISHED = 1f;
@@ -19,6 +19,7 @@ public class Tank {
         this.movementSpeed = movementSpeed;
     }
 
+    @Override
     public void move(Direction direction, CollisionChecker collisionChecker) {
         if (isMoving()) {
             return;
@@ -31,6 +32,7 @@ public class Tank {
         }
     }
 
+    @Override
     public void update(float deltaTime) {
         if (!isMoving()) {
             return;
@@ -45,18 +47,22 @@ public class Tank {
         return movementProgress < MOVEMENT_FINISHED;
     }
 
+    @Override
     public Coordinates getCoordinates() {
         return coordinates;
     }
 
+    @Override
     public Coordinates getDestination() {
         return destination;
     }
 
+    @Override
     public Direction getDirection() {
         return direction;
     }
 
+    @Override
     public float getMovementProgress() {
         return movementProgress;
     }

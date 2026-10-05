@@ -8,6 +8,7 @@ import ru.mipt.bit.platformer.model.Tank;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MoveCommandTest {
@@ -33,5 +34,15 @@ class MoveCommandTest {
 
         assertFalse(tank.isMoving());
         assertEquals(new Coordinates(1, 1), tank.getCoordinates());
+    }
+
+    @Test
+    void shouldWorkWithAnyMovableObject() {
+        RecordingMovable movable = new RecordingMovable();
+
+        new MoveCommand(movable, Direction.DOWN, EVERYTHING_IS_FREE).execute();
+
+        assertEquals(Direction.DOWN, movable.getLastDirection());
+        assertSame(EVERYTHING_IS_FREE, movable.getLastCollisionChecker());
     }
 }

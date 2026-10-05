@@ -1,18 +1,24 @@
 package ru.mipt.bit.platformer.model;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
-public final class LevelFactory {
+public class LevelFactory {
 
-    private static final float PLAYER_MOVEMENT_SPEED = 0.4f;
-    private static final Coordinates PLAYER_START = new Coordinates(1, 1);
-    private static final Coordinates TREE_POSITION = new Coordinates(1, 3);
+    private final Coordinates playerStart;
+    private final Direction playerDirection;
+    private final float playerMovementSpeed;
+    private final List<Obstacle> obstacles;
 
-    private LevelFactory() {
+    public LevelFactory(Coordinates playerStart, Direction playerDirection, float playerMovementSpeed, List<Obstacle> obstacles) {
+        this.playerStart = playerStart;
+        this.playerDirection = playerDirection;
+        this.playerMovementSpeed = playerMovementSpeed;
+        this.obstacles = new ArrayList<>(obstacles);
     }
 
-    public static Level createDefaultLevel() {
-        Tank player = new Tank(PLAYER_START, Direction.RIGHT, PLAYER_MOVEMENT_SPEED);
-        return new Level(player, Collections.singletonList(new Tree(TREE_POSITION)));
+    public Level create() {
+        Tank player = new Tank(playerStart, playerDirection, playerMovementSpeed);
+        return new Level(player, obstacles);
     }
 }
