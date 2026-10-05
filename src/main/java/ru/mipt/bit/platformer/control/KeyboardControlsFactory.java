@@ -2,28 +2,25 @@ package ru.mipt.bit.platformer.control;
 
 import ru.mipt.bit.platformer.model.CollisionChecker;
 import ru.mipt.bit.platformer.model.Direction;
-import ru.mipt.bit.platformer.model.Tank;
+import ru.mipt.bit.platformer.model.Movable;
 
-import static com.badlogic.gdx.Input.Keys.W;
-import static com.badlogic.gdx.Input.Keys.A;
-import static com.badlogic.gdx.Input.Keys.S;
-import static com.badlogic.gdx.Input.Keys.D;
-import static com.badlogic.gdx.Input.Keys.UP;
-import static com.badlogic.gdx.Input.Keys.LEFT;
-import static com.badlogic.gdx.Input.Keys.DOWN;
-import static com.badlogic.gdx.Input.Keys.RIGHT;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Map;
 
+public class KeyboardControlsFactory {
 
-public final class KeyboardControlsFactory {
+    private final Map<Direction, int[]> movementKeys = new EnumMap<>(Direction.class);
 
-    private KeyboardControlsFactory() {
+    public KeyboardControlsFactory(Map<Direction, int[]> movementKeys) {
+        movementKeys.forEach((direction, keyCodes) ->
+                this.movementKeys.put(direction, Arrays.copyOf(keyCodes, keyCodes.length)));
     }
 
-    public static KeyboardController createPlayerControls(Tank player, CollisionChecker collisionChecker, InputSource inputSource) {
-        return new KeyboardController(inputSource)
-                .bind(new MoveCommand(player, Direction.UP, collisionChecker), UP, W)
-                .bind(new MoveCommand(player, Direction.LEFT, collisionChecker), LEFT, A)
-                .bind(new MoveCommand(player, Direction.DOWN, collisionChecker), DOWN, S)
-                .bind(new MoveCommand(player, Direction.RIGHT, collisionChecker), RIGHT, D);
+    public KeyboardController createPlayerControls(Movable player, CollisionChecker collisionChecker, InputSource inputSource) {
+        KeyboardController controller = new KeyboardController(inputSource);
+        movementKeys.forEach((direction, keyCodes) ->
+                controller.bind(new MoveCommand(player, direction, collisionChecker), keyCodes));
+        return controller;
     }
 }

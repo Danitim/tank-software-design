@@ -3,7 +3,7 @@ package ru.mipt.bit.platformer.control;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeyboardController {
+public class KeyboardController implements InputController {
 
     private final InputSource inputSource;
     private final List<KeyBinding> bindings = new ArrayList<>();
@@ -17,6 +17,7 @@ public class KeyboardController {
         return this;
     }
 
+    @Override
     public void processInput() {
         for (KeyBinding binding : bindings) {
             if (binding.isTriggered(inputSource)) {

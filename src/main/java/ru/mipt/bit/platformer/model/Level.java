@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Level implements CollisionChecker {
+public class Level implements CollisionChecker, Updatable {
 
     private final Tank player;
     private final List<Obstacle> obstacles;
@@ -24,6 +24,7 @@ public class Level implements CollisionChecker {
         return true;
     }
 
+    @Override
     public void update(float deltaTime) {
         player.update(deltaTime);
     }

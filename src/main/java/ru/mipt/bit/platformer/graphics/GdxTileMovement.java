@@ -1,4 +1,4 @@
-package ru.mipt.bit.platformer.util;
+package ru.mipt.bit.platformer.graphics;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.GridPoint2;
@@ -8,20 +8,22 @@ import ru.mipt.bit.platformer.model.Coordinates;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.moveRectangleAtTileCenter;
 
-public class TileMovement {
+public class GdxTileMovement implements TileMovement {
 
     private final TiledMapTileLayer tileLayer;
     private final Interpolation interpolation;
 
-    public TileMovement(TiledMapTileLayer tileLayer, Interpolation interpolation) {
+    public GdxTileMovement(TiledMapTileLayer tileLayer, Interpolation interpolation) {
         this.tileLayer = tileLayer;
         this.interpolation = interpolation;
     }
 
+    @Override
     public Rectangle placeRectangleAtTileCenter(Rectangle rectangle, Coordinates coordinates) {
         return moveRectangleAtTileCenter(tileLayer, rectangle, toGridPoint(coordinates));
     }
 
+    @Override
     public Rectangle moveRectangleBetweenTileCenters(Rectangle rectangle, Coordinates from, Coordinates to, float progress) {
         moveRectangleAtTileCenter(tileLayer, rectangle, toGridPoint(from));
         float fromTileBottomLeftX = rectangle.x;
