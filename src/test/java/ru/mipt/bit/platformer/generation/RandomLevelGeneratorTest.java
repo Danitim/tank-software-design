@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import ru.mipt.bit.platformer.model.Coordinates;
 import ru.mipt.bit.platformer.model.Direction;
 import ru.mipt.bit.platformer.model.Level;
+import ru.mipt.bit.platformer.model.LevelBounds;
 import ru.mipt.bit.platformer.model.Obstacle;
 import ru.mipt.bit.platformer.model.TankFactory;
 import ru.mipt.bit.platformer.model.Tree;
@@ -13,6 +14,8 @@ import java.util.Random;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -24,6 +27,7 @@ class RandomLevelGeneratorTest {
     private static final long SEED = 42;
 
     private final TankFactory tankFactory = new TankFactory(Direction.RIGHT, 0.5f);
+    private final LevelBounds bounds = new LevelBounds(WIDTH, HEIGHT);
 
     @Test
     void shouldCreateGivenNumberOfObstacles() {
@@ -53,7 +57,6 @@ class RandomLevelGeneratorTest {
         }
 
         assertEquals(OBSTACLE_COUNT + 1, occupied.size());
-        assertTrue(level.isFree(level.getPlayer().getCoordinates()));
     }
 
     @Test
@@ -91,7 +94,9 @@ class RandomLevelGeneratorTest {
         Level level = createGenerator(WIDTH * HEIGHT - 1, new Random(SEED)).generate();
 
         assertEquals(WIDTH * HEIGHT - 1, level.getObstacles().size());
-        assertTrue(level.isFree(level.getPlayer().getCoordinates()));
+        for (Obstacle obstacle : level.getObstacles()) {
+            assertFalse(obstacle.occupies(level.getPlayer().getCoordinates()));
+        }
     }
 
     @Test
@@ -105,17 +110,17 @@ class RandomLevelGeneratorTest {
     }
 
     @Test
-    void shouldRejectEmptyLevel() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new RandomLevelGenerator(0, HEIGHT, 0, tankFactory, Tree::new, new Random(SEED)));
+    void shouldUseGivenBounds() {
+        Level level = createGenerator(OBSTACLE_COUNT, new Random(SEED)).generate();
+
+        assertSame(bounds, level.getBounds());
     }
 
     private RandomLevelGenerator createGenerator(int obstacleCount, Random random) {
-        return new RandomLevelGenerator(WIDTH, HEIGHT, obstacleCount, tankFactory, Tree::new, random);
+        return new RandomLevelGenerator(bounds, obstacleCount, tankFactory, Tree::new, random);
     }
 
-    private static boolean isInsideLevel(Coordinates coordinates) {
-        return coordinates.getX() >= 0 && coordinates.getX() < WIDTH
-                && coordinates.getY() >= 0 && coordinates.getY() < HEIGHT;
+    private boolean isInsideLevel(Coordinates coordinates) {
+        return bounds.contains(coordinates);
     }
 }

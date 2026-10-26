@@ -116,4 +116,29 @@ class TankTest {
         assertEquals(new Coordinates(1, 1), tank.getCoordinates());
         assertEquals(1f, tank.getMovementProgress(), PRECISION);
     }
+
+    @Test
+    void shouldOccupyOnlyOwnTileWhenStanding() {
+        assertTrue(tank.occupies(new Coordinates(1, 1)));
+        assertFalse(tank.occupies(new Coordinates(1, 2)));
+    }
+
+    @Test
+    void shouldOccupyBothTilesWhileMoving() {
+        tank.move(Direction.UP, EVERYTHING_IS_FREE);
+        tank.update(MOVEMENT_SPEED / 2f);
+
+        assertTrue(tank.occupies(new Coordinates(1, 1)));
+        assertTrue(tank.occupies(new Coordinates(1, 2)));
+        assertFalse(tank.occupies(new Coordinates(2, 1)));
+    }
+
+    @Test
+    void shouldFreePreviousTileAfterArrival() {
+        tank.move(Direction.UP, EVERYTHING_IS_FREE);
+        tank.update(MOVEMENT_SPEED);
+
+        assertFalse(tank.occupies(new Coordinates(1, 1)));
+        assertTrue(tank.occupies(new Coordinates(1, 2)));
+    }
 }

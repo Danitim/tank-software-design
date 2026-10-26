@@ -2,6 +2,7 @@ package ru.mipt.bit.platformer.generation;
 
 import ru.mipt.bit.platformer.model.Coordinates;
 import ru.mipt.bit.platformer.model.Level;
+import ru.mipt.bit.platformer.model.LevelBounds;
 import ru.mipt.bit.platformer.model.Obstacle;
 import ru.mipt.bit.platformer.model.Tank;
 import ru.mipt.bit.platformer.model.TankFactory;
@@ -27,7 +28,6 @@ public class TextLevelParser {
         this.obstacleFactories = new HashMap<>(obstacleFactories);
     }
 
-    // The first line is the top row of the level, so it gets the biggest y
     public Level parse(List<String> lines) {
         checkIsRectangle(lines);
 
@@ -56,7 +56,8 @@ public class TextLevelParser {
             throw new IllegalArgumentException("Level has no player start");
         }
         Tank player = tankFactory.create(playerStart);
-        return new Level(player, obstacles);
+        LevelBounds bounds = new LevelBounds(lines.get(0).length(), lines.size());
+        return new Level(player, obstacles, bounds);
     }
 
     private static void checkIsRectangle(List<String> lines) {

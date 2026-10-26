@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import ru.mipt.bit.platformer.model.Coordinates;
 import ru.mipt.bit.platformer.model.Direction;
 import ru.mipt.bit.platformer.model.Level;
+import ru.mipt.bit.platformer.model.LevelBounds;
 import ru.mipt.bit.platformer.model.Tank;
 import ru.mipt.bit.platformer.model.Tree;
 
@@ -29,7 +30,7 @@ class KeyboardControlsFactoryTest {
     private static final int UNBOUND_KEY = 6;
 
     private final Tank player = new Tank(new Coordinates(1, 1), Direction.RIGHT, MOVEMENT_SPEED);
-    private final Level level = new Level(player, Collections.singletonList(new Tree(new Coordinates(1, 3))));
+    private final Level level = new Level(player, Collections.singletonList(new Tree(new Coordinates(1, 3))), new LevelBounds(10, 10));
     private final FakeInputSource inputSource = new FakeInputSource();
     private final KeyboardController controller = new KeyboardControlsFactory(createMovementKeys())
             .createPlayerControls(player, level, inputSource);

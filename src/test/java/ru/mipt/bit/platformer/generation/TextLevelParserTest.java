@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -68,6 +69,21 @@ class TextLevelParserTest {
             treeCoordinates.add(obstacle.getCoordinates());
         }
         assertEquals(new HashSet<>(Arrays.asList(new Coordinates(0, 1), new Coordinates(2, 1))), treeCoordinates);
+    }
+
+    @Test
+    void shouldTakeBoundsFromLevelSize() {
+        Level level = parser.parse(Arrays.asList(
+                "____",
+                "_X__",
+                "____"
+        ));
+
+        assertEquals(4, level.getBounds().getWidth());
+        assertEquals(3, level.getBounds().getHeight());
+        assertFalse(level.isFree(new Coordinates(4, 0)));
+        assertFalse(level.isFree(new Coordinates(0, 3)));
+        assertTrue(level.isFree(new Coordinates(3, 2)));
     }
 
     @Test

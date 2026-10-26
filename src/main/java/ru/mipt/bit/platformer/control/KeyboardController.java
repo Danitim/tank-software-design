@@ -3,7 +3,7 @@ package ru.mipt.bit.platformer.control;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeyboardController implements InputController {
+public class KeyboardController implements Controller {
 
     private final InputSource inputSource;
     private final List<KeyBinding> bindings = new ArrayList<>();

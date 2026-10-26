@@ -2,6 +2,7 @@ package ru.mipt.bit.platformer.generation;
 
 import ru.mipt.bit.platformer.model.Coordinates;
 import ru.mipt.bit.platformer.model.Level;
+import ru.mipt.bit.platformer.model.LevelBounds;
 import ru.mipt.bit.platformer.model.LevelGenerator;
 import ru.mipt.bit.platformer.model.Obstacle;
 import ru.mipt.bit.platformer.model.Tank;
@@ -15,23 +16,18 @@ import java.util.function.Function;
 
 public class RandomLevelGenerator implements LevelGenerator {
 
-    private final int width;
-    private final int height;
+    private final LevelBounds bounds;
     private final int obstacleCount;
     private final TankFactory tankFactory;
     private final Function<Coordinates, Obstacle> obstacleFactory;
     private final Random random;
 
-    public RandomLevelGenerator(int width, int height, int obstacleCount, TankFactory tankFactory,
+    public RandomLevelGenerator(LevelBounds bounds, int obstacleCount, TankFactory tankFactory,
                                 Function<Coordinates, Obstacle> obstacleFactory, Random random) {
-        if (width <= 0 || height <= 0) {
-            throw new IllegalArgumentException("Level size must be positive");
-        }
-        if (obstacleCount < 0 || obstacleCount >= width * height) {
+        if (obstacleCount < 0 || obstacleCount >= bounds.getWidth() * bounds.getHeight()) {
             throw new IllegalArgumentException("Obstacle count must leave at least one free tile for the player");
         }
-        this.width = width;
-        this.height = height;
+        this.bounds = bounds;
         this.obstacleCount = obstacleCount;
         this.tankFactory = tankFactory;
         this.obstacleFactory = obstacleFactory;
@@ -40,7 +36,7 @@ public class RandomLevelGenerator implements LevelGenerator {
 
     @Override
     public Level generate() {
-        List<Coordinates> tiles = getAllTiles();
+        List<Coordinates> tiles = bounds.getAllTiles();
         Collections.shuffle(tiles, random);
 
         Tank player = tankFactory.create(tiles.get(0));
@@ -48,16 +44,6 @@ public class RandomLevelGenerator implements LevelGenerator {
         for (int i = 1; i <= obstacleCount; i++) {
             obstacles.add(obstacleFactory.apply(tiles.get(i)));
         }
-        return new Level(player, obstacles);
-    }
-
-    private List<Coordinates> getAllTiles() {
-        List<Coordinates> tiles = new ArrayList<>();
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                tiles.add(new Coordinates(x, y));
-            }
-        }
-        return tiles;
+        return new Level(player, obstacles, bounds);
     }
 }

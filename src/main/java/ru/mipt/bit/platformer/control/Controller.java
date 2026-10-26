@@ -1,7 +1,7 @@
 package ru.mipt.bit.platformer.control;
 
 @FunctionalInterface
-public interface InputController {
+public interface Controller {
 
     void processInput();
 }

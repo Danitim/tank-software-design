@@ -43,6 +43,10 @@ public class Tank implements Movable, MovingObject, Updatable {
         }
     }
 
+    public boolean occupies(Coordinates tile) {
+        return coordinates.equals(tile) || destination.equals(tile);
+    }
+
     public boolean isMoving() {
         return movementProgress < MOVEMENT_FINISHED;
     }

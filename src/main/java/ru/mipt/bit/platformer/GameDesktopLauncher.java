@@ -8,24 +8,31 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
 import ru.mipt.bit.platformer.control.GdxInputSource;
-import ru.mipt.bit.platformer.control.InputController;
+import ru.mipt.bit.platformer.control.Controller;
+import ru.mipt.bit.platformer.control.ControllerGroup;
 import ru.mipt.bit.platformer.control.KeyboardControlsFactory;
+import ru.mipt.bit.platformer.control.RandomControlsFactory;
 import ru.mipt.bit.platformer.generation.FileLevelGenerator;
 import ru.mipt.bit.platformer.generation.RandomLevelGenerator;
+import ru.mipt.bit.platformer.generation.RandomTanksLevelGenerator;
 import ru.mipt.bit.platformer.generation.TextLevelParser;
 import ru.mipt.bit.platformer.graphics.LevelGraphicsFactory;
 import ru.mipt.bit.platformer.graphics.Renderer;
 import ru.mipt.bit.platformer.model.Coordinates;
 import ru.mipt.bit.platformer.model.Direction;
 import ru.mipt.bit.platformer.model.Level;
+import ru.mipt.bit.platformer.model.LevelBounds;
 import ru.mipt.bit.platformer.model.LevelGenerator;
 import ru.mipt.bit.platformer.model.Obstacle;
+import ru.mipt.bit.platformer.model.Tank;
 import ru.mipt.bit.platformer.model.TankFactory;
 import ru.mipt.bit.platformer.model.Tree;
 import ru.mipt.bit.platformer.model.Updatable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
@@ -37,6 +44,9 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     private static final Direction PLAYER_DIRECTION = Direction.RIGHT;
     private static final float PLAYER_MOVEMENT_SPEED = 0.4f;
+    private static final Direction ENEMY_DIRECTION = Direction.LEFT;
+    private static final float ENEMY_MOVEMENT_SPEED = 0.6f;
+    private static final int ENEMY_COUNT = 4;
 
     private static final String RANDOM_LEVEL_ARGUMENT = "random";
     private static final int LEVEL_WIDTH = 10;
@@ -53,13 +63,15 @@ public class GameDesktopLauncher implements ApplicationListener {
     private static final Color BACKGROUND_COLOR = new Color(0f, 0f, 0.2f, 1f);
 
     private final LevelGenerator levelGenerator;
+    private final Random random;
 
-    private InputController controller;
+    private Controller controller;
     private Updatable world;
     private Renderer renderer;
 
-    public GameDesktopLauncher(LevelGenerator levelGenerator) {
+    public GameDesktopLauncher(LevelGenerator levelGenerator, Random random) {
         this.levelGenerator = levelGenerator;
+        this.random = random;
     }
 
     @Override
@@ -67,7 +79,17 @@ public class GameDesktopLauncher implements ApplicationListener {
         Level level = levelGenerator.generate();
         world = level;
         renderer = createLevelGraphicsFactory().create(level);
-        controller = createKeyboardControlsFactory().createPlayerControls(level.getPlayer(), level, new GdxInputSource());
+        controller = createControllers(level);
+    }
+
+    private Controller createControllers(Level level) {
+        List<Controller> controllers = new ArrayList<>();
+        controllers.add(createKeyboardControlsFactory().createPlayerControls(level.getPlayer(), level, new GdxInputSource()));
+        RandomControlsFactory randomControlsFactory = new RandomControlsFactory(random);
+        for (Tank enemy : level.getEnemies()) {
+            controllers.add(randomControlsFactory.createTankControls(enemy, level));
+        }
+        return new ControllerGroup(controllers);
     }
 
     private static LevelGraphicsFactory createLevelGraphicsFactory() {
@@ -111,16 +133,21 @@ public class GameDesktopLauncher implements ApplicationListener {
     public static void main(String[] args) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setWindowedMode(WINDOW_WIDTH, WINDOW_HEIGHT);
-        new Lwjgl3Application(new GameDesktopLauncher(createLevelGenerator(args)), config);
+        Random random = new Random();
+        LevelGenerator levelGenerator = createLevelGenerator(args, random);
+        TankFactory enemyFactory = new TankFactory(ENEMY_DIRECTION, ENEMY_MOVEMENT_SPEED);
+        LevelGenerator levelWithEnemies = new RandomTanksLevelGenerator(levelGenerator, ENEMY_COUNT, enemyFactory, random);
+        new Lwjgl3Application(new GameDesktopLauncher(levelWithEnemies, random), config);
     }
 
-    private static LevelGenerator createLevelGenerator(String[] args) {
-        TankFactory tankFactory = new TankFactory(PLAYER_DIRECTION, PLAYER_MOVEMENT_SPEED);
+    private static LevelGenerator createLevelGenerator(String[] args, Random random) {
+        TankFactory playerFactory = new TankFactory(PLAYER_DIRECTION, PLAYER_MOVEMENT_SPEED);
         if (args.length > 0 && args[0].equals(RANDOM_LEVEL_ARGUMENT)) {
-            return new RandomLevelGenerator(LEVEL_WIDTH, LEVEL_HEIGHT, RANDOM_OBSTACLE_COUNT, tankFactory, Tree::new, new Random());
+            LevelBounds bounds = new LevelBounds(LEVEL_WIDTH, LEVEL_HEIGHT);
+            return new RandomLevelGenerator(bounds, RANDOM_OBSTACLE_COUNT, playerFactory, Tree::new, random);
         }
         Map<Character, Function<Coordinates, Obstacle>> obstacleFactories = Collections.singletonMap(TREE_SYMBOL, Tree::new);
-        TextLevelParser parser = new TextLevelParser(tankFactory, PLAYER_SYMBOL, EMPTY_SYMBOL, obstacleFactories);
+        TextLevelParser parser = new TextLevelParser(playerFactory, PLAYER_SYMBOL, EMPTY_SYMBOL, obstacleFactories);
         return new FileLevelGenerator(LEVEL_FILE_PATH, parser);
     }
 }

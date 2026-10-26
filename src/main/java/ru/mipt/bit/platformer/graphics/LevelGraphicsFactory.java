@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Interpolation;
 import ru.mipt.bit.platformer.model.Level;
 import ru.mipt.bit.platformer.model.Obstacle;
+import ru.mipt.bit.platformer.model.Tank;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +46,9 @@ public class LevelGraphicsFactory {
         TextureCache textures = new TextureCache();
 
         List<ObjectGraphics> objects = new ArrayList<>();
-        objects.add(new TankGraphics(level.getPlayer(), textures.getRegion(tankTexturePath), tileMovement));
+        for (Tank tank : level.getTanks()) {
+            objects.add(new TankGraphics(tank, textures.getRegion(tankTexturePath), tileMovement));
+        }
         for (Obstacle obstacle : level.getObstacles()) {
             objects.add(new ObstacleGraphics(obstacle, textures.getRegion(getObstacleTexturePath(obstacle)), tileMovement));
         }
