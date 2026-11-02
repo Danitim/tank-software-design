@@ -1,8 +1,9 @@
 package ru.mipt.bit.platformer.control;
 
-import ru.mipt.bit.platformer.model.CollisionChecker;
 import ru.mipt.bit.platformer.model.Direction;
+import ru.mipt.bit.platformer.model.Level;
 import ru.mipt.bit.platformer.model.Movable;
+import ru.mipt.bit.platformer.model.Shooter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +17,12 @@ public class RandomControlsFactory {
         this.random = random;
     }
 
-    public RandomController createTankControls(Movable tank, CollisionChecker collisionChecker) {
+    public <T extends Movable & Shooter> RandomController createTankControls(T tank, Level level) {
         List<Command> commands = new ArrayList<>();
         for (Direction direction : Direction.values()) {
-            commands.add(new MoveCommand(tank, direction, collisionChecker));
+            commands.add(new MoveCommand(tank, direction, level));
         }
+        commands.add(new ShootCommand(tank, level));
         return new RandomController(commands, random);
     }
 }

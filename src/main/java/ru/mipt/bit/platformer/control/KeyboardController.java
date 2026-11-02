@@ -18,11 +18,13 @@ public class KeyboardController implements Controller {
     }
 
     @Override
-    public void processInput() {
+    public List<Command> createCommands() {
+        List<Command> commands = new ArrayList<>();
         for (KeyBinding binding : bindings) {
             if (binding.isTriggered(inputSource)) {
-                binding.getCommand().execute();
+                commands.add(binding.getCommand());
             }
         }
+        return commands;
     }
 }

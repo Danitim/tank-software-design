@@ -3,7 +3,7 @@ package ru.mipt.bit.platformer.graphics;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import ru.mipt.bit.platformer.model.Obstacle;
+import ru.mipt.bit.platformer.model.GameObject;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.drawTextureRegionUnscaled;
@@ -15,10 +15,10 @@ public class ObstacleGraphics implements ObjectGraphics {
     private final TextureRegion graphics;
     private final Rectangle boundingRectangle;
 
-    public ObstacleGraphics(Obstacle obstacle, TextureRegion graphics, TileMovement tileMovement) {
+    public ObstacleGraphics(GameObject object, TextureRegion graphics, TileMovement tileMovement) {
         this.graphics = graphics;
         this.boundingRectangle = createBoundingRectangle(graphics);
-        tileMovement.placeRectangleAtTileCenter(boundingRectangle, obstacle.getCoordinates());
+        tileMovement.placeRectangleAtTileCenter(boundingRectangle, object.getCoordinates());
     }
 
     @Override
