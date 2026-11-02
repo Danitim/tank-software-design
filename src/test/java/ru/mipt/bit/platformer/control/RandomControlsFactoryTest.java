@@ -1,7 +1,7 @@
 package ru.mipt.bit.platformer.control;
 
 import org.junit.jupiter.api.Test;
-import ru.mipt.bit.platformer.model.CollisionChecker;
+import ru.mipt.bit.platformer.model.Bullet;
 import ru.mipt.bit.platformer.model.Coordinates;
 import ru.mipt.bit.platformer.model.Direction;
 import ru.mipt.bit.platformer.model.Level;
@@ -21,32 +21,37 @@ class RandomControlsFactoryTest {
 
     private static final long SEED = 11;
     private static final float MOVEMENT_SPEED = 0.5f;
-    private static final CollisionChecker EVERYTHING_IS_FREE = coordinates -> true;
-
     private final RandomControlsFactory factory = new RandomControlsFactory(new Random(SEED));
+    private final Level level = new Level(new Tank(new Coordinates(0, 0), Direction.RIGHT, MOVEMENT_SPEED),
+            Collections.emptyList(), new LevelBounds(5, 5));
 
     @Test
     void shouldMoveTankInEveryDirectionSoonerOrLater() {
         RecordingMovable tank = new RecordingMovable();
-        RandomController controller = factory.createTankControls(tank, EVERYTHING_IS_FREE);
+        RandomController controller = factory.createTankControls(tank, level);
         Set<Direction> directions = EnumSet.noneOf(Direction.class);
 
         for (int i = 0; i < 100; i++) {
-            controller.processInput();
-            directions.add(tank.getLastDirection());
+            controller.createCommands().forEach(Command::execute);
+            if (tank.getLastDirection() != null) {
+                directions.add(tank.getLastDirection());
+            }
         }
 
         assertEquals(EnumSet.allOf(Direction.class), directions);
+        assertTrue(tank.getShots() > 0);
     }
 
     @Test
-    void shouldPassGivenCollisionChecker() {
+    void shouldPassGivenLevelAsCollisionChecker() {
         RecordingMovable tank = new RecordingMovable();
-        RandomController controller = factory.createTankControls(tank, EVERYTHING_IS_FREE);
+        RandomController controller = factory.createTankControls(tank, level);
 
-        controller.processInput();
+        for (int i = 0; i < 100 && tank.getLastCollisionChecker() == null; i++) {
+            controller.createCommands().forEach(Command::execute);
+        }
 
-        assertSame(EVERYTHING_IS_FREE, tank.getLastCollisionChecker());
+        assertSame(level, tank.getLastCollisionChecker());
     }
 
     @Test
@@ -55,7 +60,7 @@ class RandomControlsFactoryTest {
         Level level = new Level(tank, Collections.emptyList(), new LevelBounds(3, 3));
         RandomController controller = factory.createTankControls(tank, level);
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertTrue(tank.isMoving());
     }
@@ -68,9 +73,12 @@ class RandomControlsFactoryTest {
         RandomController controller = factory.createTankControls(tank, level);
 
         for (int i = 0; i < 200; i++) {
-            controller.processInput();
+            controller.createCommands().forEach(Command::execute);
             level.update(MOVEMENT_SPEED / 2f);
             assertTrue(bounds.contains(tank.getDestination()));
+            for (Bullet bullet : level.getBullets()) {
+                assertTrue(bounds.contains(bullet.getDestination()));
+            }
         }
     }
 }

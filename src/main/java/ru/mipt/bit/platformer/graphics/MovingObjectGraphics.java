@@ -8,15 +8,15 @@ import ru.mipt.bit.platformer.model.MovingObject;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.drawTextureRegionUnscaled;
 
-public class TankGraphics implements ObjectGraphics {
+public class MovingObjectGraphics implements ObjectGraphics {
 
-    private final MovingObject tank;
+    private final MovingObject object;
     private final TextureRegion graphics;
     private final TileMovement tileMovement;
     private final Rectangle boundingRectangle;
 
-    public TankGraphics(MovingObject tank, TextureRegion graphics, TileMovement tileMovement) {
-        this.tank = tank;
+    public MovingObjectGraphics(MovingObject object, TextureRegion graphics, TileMovement tileMovement) {
+        this.object = object;
         this.graphics = graphics;
         this.tileMovement = tileMovement;
         this.boundingRectangle = createBoundingRectangle(graphics);
@@ -24,7 +24,7 @@ public class TankGraphics implements ObjectGraphics {
 
     @Override
     public void render(Batch batch) {
-        tileMovement.moveRectangleBetweenTileCenters(boundingRectangle, tank.getCoordinates(), tank.getDestination(), tank.getMovementProgress());
-        drawTextureRegionUnscaled(batch, graphics, boundingRectangle, tank.getDirection().getRotation());
+        tileMovement.moveRectangleBetweenTileCenters(boundingRectangle, object.getCoordinates(), object.getDestination(), object.getMovementProgress());
+        drawTextureRegionUnscaled(batch, graphics, boundingRectangle, object.getDirection().getRotation());
     }
 }

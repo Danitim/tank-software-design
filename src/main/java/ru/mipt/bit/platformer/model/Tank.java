@@ -1,27 +1,47 @@
 package ru.mipt.bit.platformer.model;
 
-public class Tank implements Movable, MovingObject, Updatable {
+public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatable {
+
+    public static final int DEFAULT_HEALTH = 100;
+    public static final float DEFAULT_RELOAD_TIME = 0.5f;
+    public static final BulletFactory DEFAULT_BULLET_FACTORY = new BulletFactory(0.1f, 25);
 
     private static final float MOVEMENT_STARTED = 0f;
     private static final float MOVEMENT_FINISHED = 1f;
 
     private final float movementSpeed;
+    private final float reloadTime;
+    private final BulletFactory bulletFactory;
 
     private Coordinates coordinates;
     private Coordinates destination;
     private Direction direction;
     private float movementProgress = MOVEMENT_FINISHED;
+    private int health;
+    private float timeSinceShot;
 
     public Tank(Coordinates coordinates, Direction direction, float movementSpeed) {
+        this(coordinates, direction, movementSpeed, DEFAULT_HEALTH, DEFAULT_RELOAD_TIME, DEFAULT_BULLET_FACTORY);
+    }
+
+    public Tank(Coordinates coordinates, Direction direction, float movementSpeed,
+                int health, float reloadTime, BulletFactory bulletFactory) {
+        if (health <= 0) {
+            throw new IllegalArgumentException("Tank health must be positive");
+        }
         this.coordinates = coordinates;
         this.destination = coordinates;
         this.direction = direction;
         this.movementSpeed = movementSpeed;
+        this.health = health;
+        this.reloadTime = reloadTime;
+        this.timeSinceShot = reloadTime;
+        this.bulletFactory = bulletFactory;
     }
 
     @Override
     public void move(Direction direction, CollisionChecker collisionChecker) {
-        if (isMoving()) {
+        if (!isAlive() || isMoving()) {
             return;
         }
         this.direction = direction;
@@ -33,7 +53,17 @@ public class Tank implements Movable, MovingObject, Updatable {
     }
 
     @Override
+    public void shoot(Level level) {
+        if (!isAlive() || timeSinceShot < reloadTime) {
+            return;
+        }
+        timeSinceShot = 0f;
+        bulletFactory.create(level, direction.shift(destination), direction).launch();
+    }
+
+    @Override
     public void update(float deltaTime) {
+        timeSinceShot += deltaTime;
         if (!isMoving()) {
             return;
         }
@@ -43,6 +73,19 @@ public class Tank implements Movable, MovingObject, Updatable {
         }
     }
 
+    public void takeDamage(int damage) {
+        health -= damage;
+    }
+
+    public boolean isAlive() {
+        return health > 0;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    @Override
     public boolean occupies(Coordinates tile) {
         return coordinates.equals(tile) || destination.equals(tile);
     }

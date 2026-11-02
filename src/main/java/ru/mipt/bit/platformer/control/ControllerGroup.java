@@ -12,9 +12,11 @@ public class ControllerGroup implements Controller {
     }
 
     @Override
-    public void processInput() {
+    public List<Command> createCommands() {
+        List<Command> commands = new ArrayList<>();
         for (Controller controller : controllers) {
-            controller.processInput();
+            commands.addAll(controller.createCommands());
         }
+        return commands;
     }
 }
