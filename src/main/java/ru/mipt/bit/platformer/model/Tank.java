@@ -10,6 +10,7 @@ public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatab
     private static final float MOVEMENT_FINISHED = 1f;
 
     private final float movementSpeed;
+    private final int maxHealth;
     private final float reloadTime;
     private final BulletFactory bulletFactory;
 
@@ -33,6 +34,7 @@ public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatab
         this.destination = coordinates;
         this.direction = direction;
         this.movementSpeed = movementSpeed;
+        this.maxHealth = health;
         this.health = health;
         this.reloadTime = reloadTime;
         this.timeSinceShot = reloadTime;
@@ -83,6 +85,10 @@ public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatab
 
     public int getHealth() {
         return health;
+    }
+
+    public int getMaxHealth() {
+        return maxHealth;
     }
 
     @Override
