@@ -1,5 +1,8 @@
 package ru.mipt.bit.platformer.model;
 
+import ru.mipt.bit.platformer.architecture.Domain;
+
+@Domain
 public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatable {
 
     public static final int DEFAULT_HEALTH = 100;
@@ -20,6 +23,7 @@ public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatab
     private float movementProgress = MOVEMENT_FINISHED;
     private int health;
     private float timeSinceShot;
+    private TankState state;
 
     public Tank(Coordinates coordinates, Direction direction, float movementSpeed) {
         this(coordinates, direction, movementSpeed, DEFAULT_HEALTH, DEFAULT_RELOAD_TIME, DEFAULT_BULLET_FACTORY);
@@ -39,6 +43,7 @@ public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatab
         this.reloadTime = reloadTime;
         this.timeSinceShot = reloadTime;
         this.bulletFactory = bulletFactory;
+        this.state = TankState.forHealth(1f);
     }
 
     @Override
@@ -56,7 +61,7 @@ public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatab
 
     @Override
     public void shoot(Level level) {
-        if (!isAlive() || timeSinceShot < reloadTime) {
+        if (!isAlive() || !state.canShoot() || timeSinceShot < state.reloadTime(reloadTime)) {
             return;
         }
         timeSinceShot = 0f;
@@ -69,7 +74,7 @@ public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatab
         if (!isMoving()) {
             return;
         }
-        movementProgress = Math.min(movementProgress + deltaTime / movementSpeed, MOVEMENT_FINISHED);
+        movementProgress = Math.min(movementProgress + deltaTime / state.movementTime(movementSpeed), MOVEMENT_FINISHED);
         if (!isMoving()) {
             coordinates = destination;
         }
@@ -77,10 +82,15 @@ public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatab
 
     public void takeDamage(int damage) {
         health -= damage;
+        state = state.onHealthChanged((float) health / maxHealth);
     }
 
     public boolean isAlive() {
         return health > 0;
+    }
+
+    public TankState getState() {
+        return state;
     }
 
     public int getHealth() {

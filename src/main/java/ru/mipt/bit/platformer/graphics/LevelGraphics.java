@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.MapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.Disposable;
+import ru.mipt.bit.platformer.architecture.Adapter;
+import ru.mipt.bit.platformer.architecture.Infrastructure;
 import ru.mipt.bit.platformer.model.GameObject;
 import ru.mipt.bit.platformer.model.LevelListener;
 
@@ -16,6 +18,8 @@ import java.util.function.Function;
 import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createSingleLayerMapRenderer;
 
+@Infrastructure
+@Adapter
 public class LevelGraphics implements Renderer, LevelListener {
 
     private final Batch batch;

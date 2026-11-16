@@ -1,5 +1,7 @@
 package ru.mipt.bit.platformer.generation;
 
+import ru.mipt.bit.platformer.architecture.Adapter;
+import ru.mipt.bit.platformer.architecture.Application;
 import ru.mipt.bit.platformer.model.Coordinates;
 import ru.mipt.bit.platformer.model.Level;
 import ru.mipt.bit.platformer.model.LevelGenerator;
@@ -10,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+@Application
+@Adapter
 public class RandomTanksLevelGenerator implements LevelGenerator {
 
     private final LevelGenerator levelGenerator;

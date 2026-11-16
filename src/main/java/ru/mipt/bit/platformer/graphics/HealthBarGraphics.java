@@ -4,8 +4,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import ru.mipt.bit.platformer.architecture.Infrastructure;
 import ru.mipt.bit.platformer.model.Tank;
 
+@Infrastructure
 public class HealthBarGraphics implements ObjectGraphics {
 
     private static final float BAR_WIDTH = 90f;

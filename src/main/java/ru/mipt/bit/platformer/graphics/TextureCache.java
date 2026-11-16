@@ -3,10 +3,12 @@ package ru.mipt.bit.platformer.graphics;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Disposable;
+import ru.mipt.bit.platformer.architecture.Infrastructure;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Infrastructure
 public class TextureCache implements Disposable {
 
     private final Map<String, Texture> textures = new HashMap<>();

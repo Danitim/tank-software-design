@@ -3,11 +3,13 @@ package ru.mipt.bit.platformer.graphics;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import ru.mipt.bit.platformer.architecture.Infrastructure;
 import ru.mipt.bit.platformer.model.GameObject;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.createBoundingRectangle;
 import static ru.mipt.bit.platformer.util.GdxGameUtils.drawTextureRegionUnscaled;
 
+@Infrastructure
 public class ObstacleGraphics implements ObjectGraphics {
 
     private static final float UPRIGHT_ROTATION = 0f;

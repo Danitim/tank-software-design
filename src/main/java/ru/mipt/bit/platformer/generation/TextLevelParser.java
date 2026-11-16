@@ -1,5 +1,6 @@
 package ru.mipt.bit.platformer.generation;
 
+import ru.mipt.bit.platformer.architecture.Application;
 import ru.mipt.bit.platformer.model.Coordinates;
 import ru.mipt.bit.platformer.model.Level;
 import ru.mipt.bit.platformer.model.LevelBounds;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+@Application
 public class TextLevelParser {
 
     private final TankFactory tankFactory;

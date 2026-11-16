@@ -1,5 +1,8 @@
 package ru.mipt.bit.platformer.model;
 
+import ru.mipt.bit.platformer.architecture.Domain;
+
+@Domain
 public enum Direction {
 
     UP(new Coordinates(0, 1), 90f),

@@ -1,7 +1,10 @@
 package ru.mipt.bit.platformer.control;
 
+import ru.mipt.bit.platformer.architecture.Application;
+
 import java.util.Arrays;
 
+@Application
 public class KeyBinding {
 
     private final Command command;

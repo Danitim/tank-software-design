@@ -1,7 +1,10 @@
 package ru.mipt.bit.platformer.model;
 
+import ru.mipt.bit.platformer.architecture.Domain;
+
 import java.util.Objects;
 
+@Domain
 public final class Coordinates {
 
     private final int x;

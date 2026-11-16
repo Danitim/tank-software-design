@@ -1,5 +1,7 @@
 package ru.mipt.bit.platformer.generation;
 
+import ru.mipt.bit.platformer.architecture.Adapter;
+import ru.mipt.bit.platformer.architecture.Infrastructure;
 import ru.mipt.bit.platformer.model.Level;
 import ru.mipt.bit.platformer.model.LevelGenerator;
 
@@ -12,6 +14,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+@Infrastructure
+@Adapter
 public class FileLevelGenerator implements LevelGenerator {
 
     private final String resourcePath;

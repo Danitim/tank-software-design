@@ -1,8 +1,11 @@
 package ru.mipt.bit.platformer.control;
 
+import ru.mipt.bit.platformer.architecture.Application;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Application
 public class ControllerGroup implements Controller {
 
     private final List<Controller> controllers;

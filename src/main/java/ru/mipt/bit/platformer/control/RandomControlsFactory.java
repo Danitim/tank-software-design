@@ -1,5 +1,6 @@
 package ru.mipt.bit.platformer.control;
 
+import ru.mipt.bit.platformer.architecture.Application;
 import ru.mipt.bit.platformer.model.Direction;
 import ru.mipt.bit.platformer.model.Level;
 import ru.mipt.bit.platformer.model.Movable;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Application
 public class RandomControlsFactory {
 
     private final Random random;
