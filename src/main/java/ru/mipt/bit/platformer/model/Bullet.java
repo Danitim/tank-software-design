@@ -6,6 +6,7 @@ public class Bullet implements GameObject, MovingObject, Updatable {
     private static final float MOVEMENT_FINISHED = 1f;
 
     private final Level level;
+    private final Tank owner;
     private final Direction direction;
     private final float movementSpeed;
     private final int damage;
@@ -14,8 +15,9 @@ public class Bullet implements GameObject, MovingObject, Updatable {
     private Coordinates destination;
     private float movementProgress = MOVEMENT_FINISHED;
 
-    public Bullet(Level level, Coordinates coordinates, Direction direction, float movementSpeed, int damage) {
+    public Bullet(Level level, Tank owner, Coordinates coordinates, Direction direction, float movementSpeed, int damage) {
         this.level = level;
+        this.owner = owner;
         this.coordinates = coordinates;
         this.destination = coordinates;
         this.direction = direction;
@@ -24,7 +26,7 @@ public class Bullet implements GameObject, MovingObject, Updatable {
     }
 
     public void launch() {
-        if (level.isFree(coordinates)) {
+        if (level.isFreeExcept(coordinates, owner)) {
             level.addBullet(this);
         } else {
             hit(coordinates);
@@ -35,7 +37,7 @@ public class Bullet implements GameObject, MovingObject, Updatable {
     public void update(float deltaTime) {
         if (!isMoving()) {
             Coordinates target = direction.shift(coordinates);
-            if (!level.isFree(target)) {
+            if (!level.isFreeExcept(target, owner)) {
                 hit(target);
                 return;
             }
@@ -51,12 +53,15 @@ public class Bullet implements GameObject, MovingObject, Updatable {
     private void hit(Coordinates target) {
         level.remove(this);
         level.getBulletAt(target).ifPresent(level::remove);
-        level.getTankAt(target).ifPresent(tank -> {
-            tank.takeDamage(damage);
-            if (!tank.isAlive()) {
-                level.remove(tank);
-            }
-        });
+        level.getTanks().stream()
+                .filter(tank -> tank != owner && tank.occupies(target))
+                .findFirst()
+                .ifPresent(tank -> {
+                    tank.takeDamage(damage);
+                    if (!tank.isAlive()) {
+                        level.remove(tank);
+                    }
+                });
     }
 
     @Override
@@ -66,6 +71,10 @@ public class Bullet implements GameObject, MovingObject, Updatable {
 
     public boolean isMoving() {
         return movementProgress < MOVEMENT_FINISHED;
+    }
+
+    public Tank getOwner() {
+        return owner;
     }
 
     @Override

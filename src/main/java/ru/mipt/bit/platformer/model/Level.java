@@ -35,7 +35,7 @@ public class Level implements CollisionChecker, Updatable {
     }
 
     public void addBullet(Bullet bullet) {
-        checkIsFree(bullet.getCoordinates());
+        checkIsFree(bullet.getCoordinates(), bullet.getOwner());
         bullets.add(bullet);
         notifyAdded(bullet);
     }
@@ -49,7 +49,11 @@ public class Level implements CollisionChecker, Updatable {
     }
 
     private void checkIsFree(Coordinates coordinates) {
-        if (!isFree(coordinates)) {
+        checkIsFree(coordinates, null);
+    }
+
+    private void checkIsFree(Coordinates coordinates, GameObject ignored) {
+        if (!isFreeExcept(coordinates, ignored)) {
             throw new IllegalArgumentException("Tile " + coordinates + " is already occupied");
         }
     }
@@ -62,11 +66,15 @@ public class Level implements CollisionChecker, Updatable {
 
     @Override
     public boolean isFree(Coordinates coordinates) {
+        return isFreeExcept(coordinates, null);
+    }
+
+    public boolean isFreeExcept(Coordinates coordinates, GameObject ignored) {
         if (!bounds.contains(coordinates)) {
             return false;
         }
         for (GameObject object : getObjects()) {
-            if (object.occupies(coordinates)) {
+            if (object != ignored && object.occupies(coordinates)) {
                 return false;
             }
         }

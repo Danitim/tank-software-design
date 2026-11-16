@@ -58,7 +58,7 @@ public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatab
             return;
         }
         timeSinceShot = 0f;
-        bulletFactory.create(level, direction.shift(destination), direction).launch();
+        bulletFactory.create(level, this, direction.shift(coordinates), direction).launch();
     }
 
     @Override

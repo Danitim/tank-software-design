@@ -10,7 +10,7 @@ public class BulletFactory {
         this.damage = damage;
     }
 
-    public Bullet create(Level level, Coordinates coordinates, Direction direction) {
-        return new Bullet(level, coordinates, direction, movementSpeed, damage);
+    public Bullet create(Level level, Tank owner, Coordinates coordinates, Direction direction) {
+        return new Bullet(level, owner, coordinates, direction, movementSpeed, damage);
     }
 }

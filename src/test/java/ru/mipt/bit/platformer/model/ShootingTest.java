@@ -158,7 +158,38 @@ class ShootingTest {
         player.shoot(level);
 
         assertEquals(50, player.getHealth());
-        assertEquals(new Coordinates(2, 0), level.getBullets().get(0).getCoordinates());
+        assertEquals(new Coordinates(1, 0), level.getBullets().get(0).getCoordinates());
+    }
+
+    @Test
+    void shouldShootFromCurrentTileWhenMovingAndShootingInSameFrame() {
+        player.move(Direction.RIGHT, level);
+        player.shoot(level);
+
+        Bullet bullet = level.getBullets().get(0);
+        assertEquals(new Coordinates(1, 0), bullet.getCoordinates());
+        assertEquals(player, bullet.getOwner());
+
+        level.update(BULLET_SPEED);
+
+        assertTrue(player.isMoving());
+        assertEquals(50, player.getHealth());
+        assertEquals(new Coordinates(2, 0), bullet.getCoordinates());
+        assertEquals(1, level.getBullets().size());
+    }
+
+    @Test
+    void shouldHitTankInTileItIsMovingTo() {
+        Tank enemy = createTank(new Coordinates(4, 0), Direction.LEFT);
+        level.addEnemy(enemy);
+        player.move(Direction.RIGHT, level);
+        enemy.shoot(level);
+
+        level.update(BULLET_SPEED);
+        level.update(BULLET_SPEED);
+
+        assertEquals(50 - DAMAGE, player.getHealth());
+        assertTrue(level.getBullets().isEmpty());
     }
 
     @Test
