@@ -8,45 +8,44 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ControllerGroupTest {
 
+    private final Command player = new CountingCommand();
+    private final Command enemy = new CountingCommand();
+
     @Test
-    void shouldProcessInputOfEveryController() {
-        CountingCommand first = new CountingCommand();
-        CountingCommand second = new CountingCommand();
-        ControllerGroup group = new ControllerGroup(Arrays.asList(first::execute, second::execute));
+    void shouldCollectCommandsOfEveryControllerInGivenOrder() {
+        ControllerGroup group = new ControllerGroup(Arrays.asList(
+                () -> Collections.singletonList(player),
+                () -> Collections.singletonList(enemy)));
 
-        group.processInput();
-
-        assertEquals(1, first.getExecutions());
-        assertEquals(1, second.getExecutions());
+        assertEquals(Arrays.asList(player, enemy), group.createCommands());
     }
 
     @Test
-    void shouldProcessControllersInGivenOrder() {
-        List<String> calls = new ArrayList<>();
-        ControllerGroup group = new ControllerGroup(Arrays.asList(() -> calls.add("player"), () -> calls.add("enemy")));
+    void shouldNotExecuteCommandsItCreates() {
+        CountingCommand command = new CountingCommand();
+        ControllerGroup group = new ControllerGroup(Collections.singletonList(() -> Collections.singletonList(command)));
 
-        group.processInput();
+        group.createCommands();
 
-        assertEquals(Arrays.asList("player", "enemy"), calls);
+        assertEquals(0, command.getExecutions());
     }
 
     @Test
-    void shouldDoNothingWithoutControllers() {
-        new ControllerGroup(Collections.emptyList()).processInput();
+    void shouldReturnNoCommandsWithoutControllers() {
+        assertTrue(new ControllerGroup(Collections.emptyList()).createCommands().isEmpty());
     }
 
     @Test
     void shouldNotBeAffectedByChangesOfControllersPassedToConstructor() {
-        CountingCommand command = new CountingCommand();
-        List<Controller> controllers = new ArrayList<>(Collections.singletonList(command::execute));
+        List<Controller> controllers = new ArrayList<>(Collections.singletonList(() -> Collections.singletonList(player)));
         ControllerGroup group = new ControllerGroup(controllers);
 
         controllers.clear();
-        group.processInput();
 
-        assertEquals(1, command.getExecutions());
+        assertEquals(Collections.singletonList(player), group.createCommands());
     }
 }

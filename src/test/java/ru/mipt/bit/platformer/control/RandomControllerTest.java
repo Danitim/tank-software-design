@@ -23,7 +23,7 @@ class RandomControllerTest {
     void shouldExecuteExactlyOneCommandPerFrame() {
         RandomController controller = new RandomController(Arrays.asList(first, second, third), new Random(SEED));
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertEquals(1, first.getExecutions() + second.getExecutions() + third.getExecutions());
     }
@@ -33,7 +33,7 @@ class RandomControllerTest {
         RandomController controller = new RandomController(Arrays.asList(first, second, third), new Random(SEED));
 
         for (int i = 0; i < FRAMES; i++) {
-            controller.processInput();
+            controller.createCommands().forEach(Command::execute);
         }
 
         assertTrue(first.getExecutions() > 0);
@@ -50,8 +50,8 @@ class RandomControllerTest {
         RandomController otherController = new RandomController(Arrays.asList(otherFirst, otherSecond), new Random(SEED));
 
         for (int i = 0; i < 20; i++) {
-            controller.processInput();
-            otherController.processInput();
+            controller.createCommands().forEach(Command::execute);
+            otherController.createCommands().forEach(Command::execute);
         }
 
         assertEquals(first.getExecutions(), otherFirst.getExecutions());
@@ -62,8 +62,8 @@ class RandomControllerTest {
     void shouldAlwaysExecuteSingleCommand() {
         RandomController controller = new RandomController(Collections.singletonList(first), new Random(SEED));
 
-        controller.processInput();
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
+        controller.createCommands().forEach(Command::execute);
 
         assertEquals(2, first.getExecutions());
     }

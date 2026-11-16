@@ -1,9 +1,8 @@
 package ru.mipt.bit.platformer.model;
 
-public interface Obstacle {
+public interface Obstacle extends GameObject {
 
-    Coordinates getCoordinates();
-
+    @Override
     default boolean occupies(Coordinates coordinates) {
         return getCoordinates().equals(coordinates);
     }

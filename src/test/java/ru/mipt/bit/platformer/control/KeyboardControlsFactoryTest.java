@@ -28,11 +28,12 @@ class KeyboardControlsFactoryTest {
     private static final int DOWN_KEY = 4;
     private static final int RIGHT_KEY = 5;
     private static final int UNBOUND_KEY = 6;
+    private static final int SHOOT_KEY = 7;
 
     private final Tank player = new Tank(new Coordinates(1, 1), Direction.RIGHT, MOVEMENT_SPEED);
     private final Level level = new Level(player, Collections.singletonList(new Tree(new Coordinates(1, 3))), new LevelBounds(10, 10));
     private final FakeInputSource inputSource = new FakeInputSource();
-    private final KeyboardController controller = new KeyboardControlsFactory(createMovementKeys())
+    private final KeyboardController controller = new KeyboardControlsFactory(createMovementKeys(), SHOOT_KEY)
             .createPlayerControls(player, level, inputSource);
 
     private static Map<Direction, int[]> createMovementKeys() {
@@ -54,7 +55,7 @@ class KeyboardControlsFactoryTest {
     void shouldMovePlayerInDirectionBoundToKey(int keyCode, Direction expectedDirection) {
         inputSource.press(keyCode);
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertTrue(player.isMoving());
         assertEquals(expectedDirection, player.getDirection());
@@ -65,7 +66,7 @@ class KeyboardControlsFactoryTest {
     void shouldNotMovePlayerWhenUnboundKeyIsPressed() {
         inputSource.press(UNBOUND_KEY);
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertFalse(player.isMoving());
         assertEquals(new Coordinates(1, 1), player.getCoordinates());
@@ -78,7 +79,7 @@ class KeyboardControlsFactoryTest {
         KeyboardController controller = new KeyboardControlsFactory(onlyLeft).createPlayerControls(player, level, inputSource);
         inputSource.press(UP_KEY);
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertFalse(player.isMoving());
     }
@@ -92,7 +93,7 @@ class KeyboardControlsFactoryTest {
         KeyboardController controller = factory.createPlayerControls(player, level, inputSource);
         inputSource.press(UP_KEY);
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertTrue(player.isMoving());
         assertEquals(Direction.UP, player.getDirection());
@@ -101,12 +102,23 @@ class KeyboardControlsFactoryTest {
     @Test
     void shouldNotMovePlayerIntoObstacle() {
         inputSource.press(UP_KEY);
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
         level.update(MOVEMENT_SPEED);
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
         level.update(MOVEMENT_SPEED);
 
         assertEquals(new Coordinates(1, 2), player.getCoordinates());
+        assertFalse(player.isMoving());
+    }
+
+    @Test
+    void shouldShootWhenShootKeyIsPressed() {
+        inputSource.press(SHOOT_KEY);
+
+        controller.createCommands().forEach(Command::execute);
+
+        assertEquals(1, level.getBullets().size());
+        assertEquals(new Coordinates(2, 1), level.getBullets().get(0).getCoordinates());
         assertFalse(player.isMoving());
     }
 }

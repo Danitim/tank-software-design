@@ -1,6 +1,7 @@
 package ru.mipt.bit.platformer.control;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -18,8 +19,7 @@ public class RandomController implements Controller {
     }
 
     @Override
-    public void processInput() {
-        Command command = commands.get(random.nextInt(commands.size()));
-        command.execute();
+    public List<Command> createCommands() {
+        return Collections.singletonList(commands.get(random.nextInt(commands.size())));
     }
 }

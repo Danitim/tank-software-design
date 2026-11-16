@@ -2,6 +2,8 @@ package ru.mipt.bit.platformer.control;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class KeyboardControllerTest {
@@ -20,7 +22,7 @@ class KeyboardControllerTest {
 
     @Test
     void shouldExecuteNothingWhenNoKeyIsPressed() {
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertEquals(0, command.getExecutions());
         assertEquals(0, otherCommand.getExecutions());
@@ -30,7 +32,7 @@ class KeyboardControllerTest {
     void shouldExecuteCommandBoundToPressedKey() {
         inputSource.press(FIRST_KEY);
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertEquals(1, command.getExecutions());
         assertEquals(0, otherCommand.getExecutions());
@@ -40,7 +42,7 @@ class KeyboardControllerTest {
     void shouldExecuteCommandOnceWhenSeveralOfItsKeysArePressed() {
         inputSource.press(FIRST_KEY, SECOND_KEY);
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertEquals(1, command.getExecutions());
     }
@@ -49,7 +51,7 @@ class KeyboardControllerTest {
     void shouldExecuteEveryTriggeredCommand() {
         inputSource.press(SECOND_KEY, OTHER_COMMAND_KEY);
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertEquals(1, command.getExecutions());
         assertEquals(1, otherCommand.getExecutions());
@@ -59,7 +61,7 @@ class KeyboardControllerTest {
     void shouldIgnoreUnboundKey() {
         inputSource.press(UNBOUND_KEY);
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertEquals(0, command.getExecutions());
         assertEquals(0, otherCommand.getExecutions());
@@ -69,8 +71,8 @@ class KeyboardControllerTest {
     void shouldExecuteCommandOnEveryProcessedFrameWhileKeyIsHeld() {
         inputSource.press(FIRST_KEY);
 
-        controller.processInput();
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
+        controller.createCommands().forEach(Command::execute);
 
         assertEquals(2, command.getExecutions());
     }
@@ -81,9 +83,17 @@ class KeyboardControllerTest {
         controller.bind(newCommand, UNBOUND_KEY);
         inputSource.press(UNBOUND_KEY);
 
-        controller.processInput();
+        controller.createCommands().forEach(Command::execute);
 
         assertEquals(1, newCommand.getExecutions());
+        assertEquals(0, command.getExecutions());
+    }
+
+    @Test
+    void shouldOnlyCreateCommandsWithoutExecutingThem() {
+        inputSource.press(FIRST_KEY);
+
+        assertEquals(Collections.singletonList(command), controller.createCommands());
         assertEquals(0, command.getExecutions());
     }
 }
