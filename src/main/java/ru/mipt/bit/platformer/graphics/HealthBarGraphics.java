@@ -39,10 +39,14 @@ public class HealthBarGraphics implements ObjectGraphics {
         float y = barRectangle.y + BAR_OFFSET_Y;
         float healthPart = (float) tank.getHealth() / tank.getMaxHealth();
 
-        batch.setColor(Color.RED);
-        batch.draw(barTexture, x, y, BAR_WIDTH, BAR_HEIGHT);
-        batch.setColor(Color.GREEN);
-        batch.draw(barTexture, x, y, BAR_WIDTH * healthPart, BAR_HEIGHT);
-        batch.setColor(Color.WHITE);
+        Color originalColor = batch.getColor().cpy();
+        try {
+            batch.setColor(Color.RED);
+            batch.draw(barTexture, x, y, BAR_WIDTH, BAR_HEIGHT);
+            batch.setColor(Color.GREEN);
+            batch.draw(barTexture, x, y, BAR_WIDTH * healthPart, BAR_HEIGHT);
+        } finally {
+            batch.setColor(originalColor);
+        }
     }
 }
