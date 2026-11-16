@@ -11,12 +11,15 @@ import ru.mipt.bit.platformer.control.Command;
 import ru.mipt.bit.platformer.control.GdxInputSource;
 import ru.mipt.bit.platformer.control.Controller;
 import ru.mipt.bit.platformer.control.ControllerGroup;
+import ru.mipt.bit.platformer.control.KeyboardController;
 import ru.mipt.bit.platformer.control.KeyboardControlsFactory;
 import ru.mipt.bit.platformer.control.RandomControlsFactory;
+import ru.mipt.bit.platformer.control.ToggleHealthBarsCommand;
 import ru.mipt.bit.platformer.generation.FileLevelGenerator;
 import ru.mipt.bit.platformer.generation.RandomLevelGenerator;
 import ru.mipt.bit.platformer.generation.RandomTanksLevelGenerator;
 import ru.mipt.bit.platformer.generation.TextLevelParser;
+import ru.mipt.bit.platformer.graphics.HealthBarVisibility;
 import ru.mipt.bit.platformer.graphics.LevelGraphics;
 import ru.mipt.bit.platformer.graphics.LevelGraphicsFactory;
 import ru.mipt.bit.platformer.graphics.Renderer;
@@ -54,7 +57,7 @@ public class GameDesktopLauncher implements ApplicationListener {
     private static final float PLAYER_RELOAD_TIME = 0.4f;
     private static final Direction ENEMY_DIRECTION = Direction.LEFT;
     private static final float ENEMY_MOVEMENT_SPEED = 0.6f;
-    private static final int ENEMY_HEALTH = 50;
+    private static final int ENEMY_HEALTH = 100;
     private static final float ENEMY_RELOAD_TIME = 1f;
     private static final int ENEMY_COUNT = 4;
     private static final BulletFactory BULLET_FACTORY = new BulletFactory(0.1f, 25);
@@ -72,10 +75,12 @@ public class GameDesktopLauncher implements ApplicationListener {
     private static final String TANK_TEXTURE_PATH = "images/tank_blue.png";
     private static final String TREE_TEXTURE_PATH = "images/greenTree.png";
     private static final String BULLET_TEXTURE_PATH = "images/bullet.png";
+    private static final String HEALTH_BAR_TEXTURE_PATH = "images/health_bar.png";
     private static final Color BACKGROUND_COLOR = new Color(0f, 0f, 0.2f, 1f);
 
     private final LevelGenerator levelGenerator;
     private final Random random;
+    private final HealthBarVisibility healthBarVisibility = new HealthBarVisibility(false);
 
     private Controller controller;
     private Updatable world;
@@ -98,6 +103,8 @@ public class GameDesktopLauncher implements ApplicationListener {
 
     private Controller createControllers(Level level) {
         List<Controller> controllers = new ArrayList<>();
+        controllers.add(new KeyboardController(Gdx.input::isKeyJustPressed)
+                .bind(new ToggleHealthBarsCommand(healthBarVisibility), Keys.L));
         controllers.add(createKeyboardControlsFactory().createPlayerControls(level.getPlayer(), level, new GdxInputSource()));
         RandomControlsFactory randomControlsFactory = new RandomControlsFactory(random);
         for (Tank enemy : level.getEnemies()) {
@@ -106,12 +113,13 @@ public class GameDesktopLauncher implements ApplicationListener {
         return new ControllerGroup(controllers);
     }
 
-    private static LevelGraphicsFactory createLevelGraphicsFactory() {
+    private LevelGraphicsFactory createLevelGraphicsFactory() {
         Map<Class<? extends GameObject>, String> texturePaths = new HashMap<>();
         texturePaths.put(Tank.class, TANK_TEXTURE_PATH);
         texturePaths.put(Tree.class, TREE_TEXTURE_PATH);
         texturePaths.put(Bullet.class, BULLET_TEXTURE_PATH);
-        return new LevelGraphicsFactory(LEVEL_MAP_PATH, texturePaths, Interpolation.smooth, BACKGROUND_COLOR);
+        return new LevelGraphicsFactory(LEVEL_MAP_PATH, texturePaths, Interpolation.smooth, BACKGROUND_COLOR,
+                HEALTH_BAR_TEXTURE_PATH, healthBarVisibility);
     }
 
     private static KeyboardControlsFactory createKeyboardControlsFactory() {

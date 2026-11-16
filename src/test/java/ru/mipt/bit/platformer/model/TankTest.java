@@ -17,6 +17,14 @@ class TankTest {
     private final Tank tank = new Tank(new Coordinates(1, 1), Direction.RIGHT, MOVEMENT_SPEED);
 
     @Test
+    void shouldKeepMaxHealthAfterDamage() {
+        tank.takeDamage(30);
+
+        assertEquals(Tank.DEFAULT_HEALTH - 30, tank.getHealth());
+        assertEquals(Tank.DEFAULT_HEALTH, tank.getMaxHealth());
+    }
+
+    @Test
     void shouldStandStillWhenCreated() {
         assertFalse(tank.isMoving());
         assertEquals(new Coordinates(1, 1), tank.getCoordinates());
