@@ -1,5 +1,8 @@
 package ru.mipt.bit.platformer.graphics;
 
+import ru.mipt.bit.platformer.architecture.Infrastructure;
+
+@Infrastructure
 public class HealthBarVisibility {
 
     private boolean visible;

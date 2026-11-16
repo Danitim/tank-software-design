@@ -1,5 +1,8 @@
 package ru.mipt.bit.platformer.model;
 
+import ru.mipt.bit.platformer.architecture.Domain;
+
+@Domain
 public interface TankState {
 
     float LIGHT_HEALTH_THRESHOLD = 0.7f;

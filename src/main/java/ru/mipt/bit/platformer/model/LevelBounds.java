@@ -1,8 +1,11 @@
 package ru.mipt.bit.platformer.model;
 
+import ru.mipt.bit.platformer.architecture.Domain;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Domain
 public class LevelBounds {
 
     private final int width;

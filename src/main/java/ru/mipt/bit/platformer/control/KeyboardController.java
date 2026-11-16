@@ -1,8 +1,13 @@
 package ru.mipt.bit.platformer.control;
 
+import ru.mipt.bit.platformer.architecture.Adapter;
+import ru.mipt.bit.platformer.architecture.Application;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Application
+@Adapter
 public class KeyboardController implements Controller {
 
     private final InputSource inputSource;

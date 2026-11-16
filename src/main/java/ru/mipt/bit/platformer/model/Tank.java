@@ -1,5 +1,8 @@
 package ru.mipt.bit.platformer.model;
 
+import ru.mipt.bit.platformer.architecture.Domain;
+
+@Domain
 public class Tank implements GameObject, Movable, Shooter, MovingObject, Updatable {
 
     public static final int DEFAULT_HEALTH = 100;

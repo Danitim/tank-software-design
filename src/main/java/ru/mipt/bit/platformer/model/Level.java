@@ -1,10 +1,13 @@
 package ru.mipt.bit.platformer.model;
 
+import ru.mipt.bit.platformer.architecture.Domain;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@Domain
 public class Level implements CollisionChecker, Updatable {
 
     private final Tank player;

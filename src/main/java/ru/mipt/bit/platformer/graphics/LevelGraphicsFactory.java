@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Interpolation;
+import ru.mipt.bit.platformer.architecture.Infrastructure;
 import ru.mipt.bit.platformer.model.GameObject;
 import ru.mipt.bit.platformer.model.MovingObject;
 import ru.mipt.bit.platformer.model.Tank;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 import static ru.mipt.bit.platformer.util.GdxGameUtils.getSingleLayer;
 
+@Infrastructure
 public class LevelGraphicsFactory {
 
     private final String levelMapPath;

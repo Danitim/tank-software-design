@@ -1,5 +1,8 @@
 package ru.mipt.bit.platformer.model;
 
+import ru.mipt.bit.platformer.architecture.Domain;
+
+@Domain
 public class HeavyTankState implements TankState {
 
     private static final float SLOWDOWN = 3f;

@@ -7,6 +7,8 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Interpolation;
+import ru.mipt.bit.platformer.architecture.Adapter;
+import ru.mipt.bit.platformer.architecture.Infrastructure;
 import ru.mipt.bit.platformer.control.Command;
 import ru.mipt.bit.platformer.control.GdxInputSource;
 import ru.mipt.bit.platformer.control.Controller;
@@ -46,6 +48,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+@Infrastructure
+@Adapter
 public class GameDesktopLauncher implements ApplicationListener {
 
     private static final int WINDOW_WIDTH = 1280;

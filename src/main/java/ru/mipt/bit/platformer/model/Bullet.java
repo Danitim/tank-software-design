@@ -1,5 +1,8 @@
 package ru.mipt.bit.platformer.model;
 
+import ru.mipt.bit.platformer.architecture.Domain;
+
+@Domain
 public class Bullet implements GameObject, MovingObject, Updatable {
 
     private static final float MOVEMENT_STARTED = 0f;
